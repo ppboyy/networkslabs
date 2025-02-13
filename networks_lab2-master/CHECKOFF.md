@@ -20,7 +20,7 @@ Refer to get_request.http file for sample GET requests.
 
 1. `/`
 
-Default page. Shows ""Welcome to the the world of Pokemon! Please choose your starter Pokemon!" when there are no pokemon created. Whereas it shows the number of pokemons if there are pokemons created in the database
+Homepage. Displays ""Welcome to the the world of Pokemon! Please choose your starter Pokemon!" when there are no pokemon created. Whereas it displays the number of pokemons if there are pokemons created in the database
 
 2. `/pokemon`
 
@@ -60,7 +60,7 @@ Display maximum number of N pokemons.
 
 11. `/pokemon?offset=<number_of_offset>`
 
-Display pokemons with a front offset of N 
+Display pokemons with a front offset of N. 
 
 
 ### POST
@@ -79,13 +79,15 @@ Creates a new pokemon. All respective json fields must be provided.
     xp: int
 }
 
+This results in a new pokemon created in the Redis database. 
+
 ### DELETE
 
 All of these endpoints under this section are idempotent. Validation checks are in place to check for duplicated deletion.
 
 1. `/pokemon/{id}`
 
-Delete a pokemon by its ID.
+Delete a pokemon by its ID. Entry will be deleted in Redis database.
 
 2. `/pokemon-batch`
 
@@ -94,7 +96,10 @@ Delete multiple pokemons within a range of pokemon level. Requires the specific 
     min_level: int
     max_level: int
 }
+
+All pokemons within the range will be deleted in Redis database.
+
 ## Future Improvements
 Currently, the server may be under low load due to the limited amount of data in the database and the small number of client requests. However, as the database expands and server traffic increases, implementing caching can significantly improve performance and efficiency. For example, we can cache the common queries such as "/pokemon?sortBy=name" to avoid recomputation and speeds up repeated requests and set a short TTL to ensure data freshness.
 
-Furthermore, instead of fetching all pokemons and sorting in python, we can try to perform sorting and filtering directly in Redis if possible. This will definitely speed up the fetching process.
+Furthermore, instead of fetching all pokemons and sorting in python, we can try to perform sorting and filtering directly in Redis if possible. This will speed up the fetching process.
