@@ -1,0 +1,38 @@
+### Create new pokemon Pikachu
+POST http://127.0.0.1:8000/pokemon HTTP/1.1
+Content-Type: application/json
+
+{
+    "name": "Pikachu",
+    "id": 25,
+    "hp": 35,
+    "type": "Electric",
+    "level": 30,
+    "xp": 0
+}
+
+### Create new pokemon Bublasaur
+POST http://127.0.0.1:8000/pokemon HTTP/1.1
+Content-Type: application/json
+
+{
+    "name": "Bulbasaur",
+    "id": 1,
+    "hp": 45,
+    "type": "Grass",
+    "level": 1,
+    "xp": 0
+}
+
+### Create new pokemon Charmander
+POST http://127.0.0.1:8000/pokemon HTTP/1.1
+Content-Type: application/json
+
+{
+    "name": "Charmander",
+    "id": 4,
+    "hp": 39,
+    "type": "Fire",
+    "level": 13,
+    "xp": 0
+}
