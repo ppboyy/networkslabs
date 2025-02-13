@@ -39,6 +39,10 @@ async def read_pokemon_list(
     for pokemon_id in all_pokemon_ids:
         pokemon = pickle.loads(redis_client.get(f"/pokemon/{pokemon_id}"))
         pokemon_collection.append(pokemon)
+    
+    if len(pokemon_collection) == 0:
+        response.status_code = 200
+        return "No pokemons found in the world!"
 
     if sortBy:
         if sortBy == "id":

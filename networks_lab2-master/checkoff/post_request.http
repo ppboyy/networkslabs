@@ -10,7 +10,6 @@ Content-Type: application/json
     "level": 30,
     "xp": 0
 }
-
 ### Create new pokemon Bublasaur
 POST http://127.0.0.1:8000/pokemon HTTP/1.1
 Content-Type: application/json
@@ -36,3 +35,6 @@ Content-Type: application/json
     "level": 13,
     "xp": 0
 }
+
+### Check all if pokemons are created 
+GET http://127.0.0.1:8000/pokemon HTTP/1.1

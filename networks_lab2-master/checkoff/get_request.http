@@ -1,0 +1,33 @@
+### Retrieve all pokemons
+GET http://127.0.0.1:8000/pokemon HTTP/1.1
+
+### Retrieve a pokemon by ID
+GET http://127.0.0.1:8000/pokemon/1 HTTP/1.1
+
+### Sort pokemons by id
+GET http://127.0.0.1:8000/pokemon?sortBy=id HTTP/1.1
+
+### Sort pokemons by name
+GET http://127.0.0.1:8000/pokemon?sortBy=name HTTP/1.1
+
+### Sort pokemons by hp
+GET http://127.0.0.1:8000/pokemon?sortBy=hp HTTP/1.1
+
+### Sort pokemons by type
+GET http://127.0.0.1:8000/pokemon?sortBy=type HTTP/1.1
+
+### Sort pokemons by level
+GET http://127.0.0.1:8000/pokemon?sortBy=level HTTP/1.1
+
+### Sort pokemons by xp
+GET http://127.0.0.1:8000/pokemon?sortBy=xp HTTP/1.1
+
+### Retrieve a maximum number of pokemons
+GET http://127.0.0.1:8000/pokemon?count=2 HTTP/1.1
+
+### Retrieve a front offset of pokemons
+GET http://127.0.0.1:8000/pokemon?offset=2 HTTP/1.1
+
+### Retrieve pokemons sorted by type and count of 2
+GET http://127.0.0.1:8000/pokemon?sortBy=type&count=2 HTTP/1.1
+
