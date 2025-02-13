@@ -6,7 +6,9 @@
 
 First, ensure that [docker](https://docs.docker.com/get-docker/) and [docker-compose](https://docs.docker.com/compose/install/)  are installed on your machine.
 
-Next, navigate to the directory containing the CHECKOFF.md file and run the command docker-compose up to start the REST API server. Once it's running, visit http://127.0.0.1:8000 in your browser to see the output.
+Next, navigate to the directory containing the CHECKOFF.md file and run the command ```pip install -r requirements.txt``` to install package dependencies.
+
+Afterwards, run the command ```docker-compose up``` to start the REST API server. Once it's running, visit http://127.0.0.1:8000 in your browser to see the output.
 
 ## Endpoints Documentation
 
