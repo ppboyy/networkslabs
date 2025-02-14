@@ -68,6 +68,8 @@ Display pokemons with a front offset of N.
 ### POST
 Generally, a POST request is non-idempotent. However, the implementation of this endpoint allows us to preserve idempotency since it checks for existing Pokemon in the database.
 
+Refer to post_request.http file for sample POST requests. 
+
 
 1. `/pokemon`
 
@@ -86,6 +88,8 @@ This results in a new pokemon created in the Redis database.
 ### DELETE
 
 All of these endpoints under this section are idempotent. Validation checks are in place to check for duplicated deletion.
+
+Refer to delete_request.http file for sample DELETE requests. 
 
 1. `/pokemon/{id}`
 
