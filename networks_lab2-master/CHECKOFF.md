@@ -85,7 +85,7 @@ This results in a new pokemon created in the Redis database.
 
 ### DELETE
 
-All of these endpoints under this section are idempotent. Validation checks are in place to check for duplicated deletion.
+All of these endpoints under this section are idempotent. Validation checks are in place to check for duplicated deletion. Also, authorization is required to identify the user to delete the entry.
 
 Refer to delete_request.http file for sample DELETE requests. 
 

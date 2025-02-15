@@ -1,5 +1,6 @@
-from fastapi import FastAPI, Response, Depends, Header, File, UploadFile
+from fastapi import FastAPI, Response, Depends, Header, File, UploadFile, HTTPException
 from fastapi.responses import JSONResponse, FileResponse
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
 import redis
 from models import Pokemon, BatchPokeDelete
 import pickle
@@ -7,8 +8,14 @@ from typing import Optional, List
 import csv
 import io
 import json
+import secrets
+import os
+from starlette.status import HTTP_401_UNAUTHORIZED
+
 
 app = FastAPI()
+
+ADMIN_PASSWORD = "cheems"
 
 def get_redis_client():
     return redis.Redis(host='redis')
@@ -17,6 +24,42 @@ def get_all_pokemon_ids(redis_client):
     all_pokemon_ids = redis_client.smembers("/pokemon/id")
     all_pokemon_ids = [int(x.decode("utf-8")) for x in all_pokemon_ids]
     return all_pokemon_ids
+
+
+
+def verify_admin_password(authorization: str = Header(None)):
+    """Verify the admin password from the Authorization header."""
+    if not authorization:
+        raise HTTPException(
+            status_code=HTTP_401_UNAUTHORIZED,
+            detail="Authorization header is missing",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    # Expect the header to be in the format: "Bearer <password>"
+    try:
+        auth_type, password = authorization.split()
+        if auth_type.lower() != "bearer":
+            raise HTTPException(
+                status_code=HTTP_401_UNAUTHORIZED,
+                detail="Invalid authorization type",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+    except ValueError:
+        raise HTTPException(
+            status_code=HTTP_401_UNAUTHORIZED,
+            detail="Invalid authorization header format",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    if not secrets.compare_digest(password, ADMIN_PASSWORD):
+        raise HTTPException(
+            status_code=HTTP_401_UNAUTHORIZED,
+            detail="Invalid admin password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    return True
 
 
 @app.get("/")
@@ -113,9 +156,9 @@ async def delete_pokemon(
     pokemon_id: int,
     response: Response,
     redis_client: redis.Redis = Depends(get_redis_client),
+    authorized: bool = Depends(verify_admin_password)
 ):
     if pokemon_id in get_all_pokemon_ids(redis_client):
-        
         redis_client.srem("/pokemon/id", pokemon_id)
         redis_client.delete(f"/pokemon/{pokemon_id}")
         response.status_code = 200
@@ -129,6 +172,7 @@ async def delete_multiple_pokemons(
     response: Response,
     batchinfo: BatchPokeDelete,
     redis_client: redis.Redis = Depends(get_redis_client),
+    authorized: bool = Depends(verify_admin_password)
 ):
     all_pokemon_ids = get_all_pokemon_ids(redis_client)
     pokemon_collection = []
@@ -140,7 +184,7 @@ async def delete_multiple_pokemons(
         response.status_code = 404
         return "No pokemons found in the world!"
 
-    if batchinfo.min_level >0 and batchinfo.max_level >0:
+    if batchinfo.min_level > 0 and batchinfo.max_level > 0:
         deleted_pokemon = []
         for pokemon in pokemon_collection:
             if int(pokemon.level) >= batchinfo.min_level and int(pokemon.level) <= batchinfo.max_level:
@@ -153,55 +197,3 @@ async def delete_multiple_pokemons(
     else:
         response.status_code = 400
         return "Invalid level values. Please provide a valid range 1-100"
-
-@app.get("/pokemon-export")  # Remove response_class=FileResponse
-async def export_pokemon(
-    response: Response,
-    redis_client: redis.Redis = Depends(get_redis_client)
-):
-    # Get all Pokemon
-    all_pokemon_ids = get_all_pokemon_ids(redis_client)
-
-    if len(all_pokemon_ids) == 0:
-        return JSONResponse(
-            status_code=404,
-            content={"message": "No pokemons found in the world!"}
-        )
-    
-    try:
-        pokemon_collection = []
-        for pokemon_id in all_pokemon_ids:
-            pokemon = pickle.loads(redis_client.get(f"/pokemon/{pokemon_id}"))
-            pokemon_collection.append(pokemon)
-        
-        # Create CSV in memory
-        output = io.StringIO()
-        writer = csv.DictWriter(output, fieldnames=['id', 'name', 'level', 'hp', 'type', 'xp'])
-        writer.writeheader()
-        
-        for pokemon in pokemon_collection:
-            writer.writerow({
-                'id': pokemon.id,
-                'name': pokemon.name,
-                'level': pokemon.level,
-                'hp': pokemon.hp,
-                'type': pokemon.type,
-                'xp': pokemon.xp
-            })
-        
-        # Return CSV response
-        return Response(
-            content=output.getvalue(),
-            media_type='text/csv',
-            headers={
-                'Content-Disposition': 'attachment; filename="pokemon_export.csv"'
-            }
-        )
-    
-    except Exception as e:
-        return JSONResponse(
-            status_code=500,
-            content={"message": f"Error exporting Pokemon: {str(e)}"}
-        )
-
-

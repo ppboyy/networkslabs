@@ -1,10 +1,15 @@
-### Delete a pokemon by ID
+### Delete a pokemon by ID w/o password
 DELETE http://127.0.0.1:8000/pokemon/1 HTTP/1.1
+
+### Delete a pokemon by ID w password
+DELETE http://127.0.0.1:8000/pokemon/1 HTTP/1.1
+Authorization: Bearer cheems
 
 ### Check if pokemon with ID 1 is deleted
 DELETE http://127.0.0.1:8000/pokemon/1 HTTP/1.1
+Authorization: Bearer cheems
 
-### Batch delete pokemon within a range of levels (1-100)
+### Batch delete pokemon within a range of levels (1-100) w/o password
 DELETE  http://127.0.0.1:8000/pokemon-batch HTTP/1.1
 Content-Type: application/json
 
@@ -13,5 +18,15 @@ Content-Type: application/json
     "max_level": 100
 }
 
+
+### Batch delete pokemon within a range of levels (1-100) w/ password
+DELETE  http://127.0.0.1:8000/pokemon-batch HTTP/1.1
+Authorization: Bearer cheems
+Content-Type: application/json
+
+{
+    "min_level": 1,
+    "max_level": 100
+}
 ### Check all if pokemons are deleted 
 GET http://127.0.0.1:8000/pokemon HTTP/1.1

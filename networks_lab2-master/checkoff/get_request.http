@@ -30,4 +30,3 @@ GET http://127.0.0.1:8000/pokemon?offset=2 HTTP/1.1
 
 ### Retrieve pokemons sorted by type and count of 2
 GET http://127.0.0.1:8000/pokemon?sortBy=type&count=2 HTTP/1.1
-
